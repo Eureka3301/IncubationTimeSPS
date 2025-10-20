@@ -38,4 +38,6 @@ search_tau = np.logspace(np.log10(props.get('tau_l(s)')), np.log10(props.get('ta
 
 
 # Visualize LSM
-fig, axes = LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau)
+#fig, axes = LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau)
+
+fig, axes = SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, 10, 100)
