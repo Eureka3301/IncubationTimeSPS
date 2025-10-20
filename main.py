@@ -8,6 +8,18 @@ plt.style.use(['science','no-latex'])
 
 from filemanager import read_csv, load_prop
 
-from optimizers import *
+from optimizers_archive import *
 
-plot_model(1, 1)
+
+mech_props = {
+    'E' : 50e+9,
+    'sig_st' : 300e+6,
+}
+
+model_params = {
+    'p1' : 1,
+    'p2' : 10,
+}
+
+
+
