@@ -8,18 +8,34 @@ plt.style.use(['science','no-latex'])
 
 from filemanager import read_csv, load_prop
 
-from optimizers_archive import *
+from optimizers import *
 
 
-mech_props = {
-    'E' : 50e+9,
-    'sig_st' : 300e+6,
+
+propfilename = {
+    'AC':r'C:\Users\rodio\Downloads\Data\As Cast.json',
+    'T':r'C:\Users\rodio\Downloads\Data\T5.json'
 }
 
-model_params = {
-    'p1' : 1,
-    'p2' : 10,
+datafilename = {
+    'AC':r'C:\Users\rodio\Downloads\Data\As Cast.csv',
+    'T':r'C:\Users\rodio\Downloads\Data\T5.csv'
 }
 
+mat = 'T'
+print(f'Material {mat}')
+
+props = load_prop(propfilename[mat])
+
+xx, yy = read_csv(datafilename[mat])
+
+E = props.get('E(Pa)')
+sig_st = props.get('sig_st(Pa)')
+
+# Define search ranges
+search_sig_cr = np.linspace(props.get('sigcr_l(Pa)'), props.get('sigcr_r(Pa)'), props.get('sigcr_num'))
+search_tau = np.logspace(np.log10(props.get('tau_l(s)')), np.log10(props.get('tau_r(s)')), props.get('tau_num'))
 
 
+# Visualize LSM
+fig, axes = LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau)

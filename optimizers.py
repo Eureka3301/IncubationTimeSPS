@@ -107,7 +107,8 @@ def LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau):
     
     # Left subplot: Data and model curve
     # Generate smooth curve for model
-    x_curve = np.logspace(np.log10(min(xx_unit)), np.log10(max(xx_unit)), 100)
+    #x_curve = np.logspace(np.log10(min(xx_unit)), np.log10(max(xx_unit)), 100)
+    x_curve = np.logspace(np.log10(1e-8), np.log10(10), 100)
     y_curve = np.array([model(x, p1_opt, p2_opt) for x in x_curve])
     
     # Convert back to absolute values for plotting
@@ -141,14 +142,14 @@ def LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau):
     ax2.legend()
     ax2.grid(True, alpha=0.3)
     
-    plt.tight_layout()
-    plt.show()
-    
     # Print optimal parameters
     print(f"Optimal parameters:")
     print(f"  sig_cr = {sig_cr_opt:.6f} Pa")
     print(f"  tau = {tau_opt:.6e} s")
     print(f"  Unit parameters: p1 = {p1_opt:.6f}, p2 = {p2_opt:.6f}")
+
+    plt.tight_layout()
+    plt.show()
     
     return fig, (ax1, ax2)
 

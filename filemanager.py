@@ -16,9 +16,9 @@ def read_csv(filename):
         while line:
             x, y = tuple(map(float, line.replace(',','.').split(sep=';')))
             xx.append(x)
-            yy.append(y)
+            yy.append(y*1e6)
             line = file.readline()
-    return (xx, yy)
+    return (np.array(xx), np.array(yy))
 
 def dim(xx, yy):
     return np.min((len(xx), len(yy)))
