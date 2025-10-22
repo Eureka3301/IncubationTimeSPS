@@ -33,7 +33,7 @@ $$
 
 Here:
 
-$$ p_1 = \sigma_{st} / \sigma_{st}  \quad \text{relation between critical stress parameter and one in static} $$
+$$ p_1 = \sigma_{cr} / \sigma_{st}  \quad \text{relation between critical stress parameter and one in static} $$
 $$ p_2 = \tau / \tau_0              \quad \text{relation between incubation time and its order}(1\mu s) $$
 $$ \varepsilon_{st} = \sigma_{st} / E               \quad \text{this is approximate strain at yielding} $$
 $$ \dot{\varepsilon}_{st} = \varepsilon_{st} / 2 \tau_0 \quad \text{specific strain rate}$$
@@ -51,3 +51,12 @@ I want to write how it works for the model.
 It is a bit harder than for linear regression.
 
 
+## Optimisation
+
+1...2^N list of permutations instead of beta
+
+1...p1 x p2 multiply by beta
+
+(tau_max - tau_min ) / tau_min --> search optimisation
+
+upload in file
