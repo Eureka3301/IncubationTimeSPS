@@ -36,7 +36,7 @@ Here:
 $$ p_1 = \sigma_{cr} / \sigma_{st}  \quad \text{relation between critical stress parameter and one in static} $$
 $$ p_2 = \tau / \tau_0              \quad \text{relation between incubation time and its order}(1\mu s) $$
 $$ \varepsilon_{st} = \sigma_{st} / E               \quad \text{this is approximate strain at yielding} $$
-$$ \dot{\varepsilon}_{st} = \varepsilon_{st} / 2 \tau_0 \quad \text{specific strain rate}$$
+$$ \dot{\varepsilon}_{st} = 2 \varepsilon_{st} / \tau_0 \quad \text{specific strain rate}$$
 $$ Y = \sigma_y / \sigma_{st}       \quad \text{relation between yield stress and the one in static} $$
 $$ X = \dot{\varepsilon}/\dot{\varepsilon}_{st} \quad \text{relation between strain rate and specific strain rate} $$
 

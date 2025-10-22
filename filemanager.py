@@ -3,12 +3,18 @@ import numpy as np
 import json
 
 def load_prop(prop_filename):
+    '''
+    loading any json file
+    '''
     with open(prop_filename, 'r') as file:
         props = json.load(file)
 
     return props
 
 def read_csv(filename):
+    '''
+    reading any two column file
+    '''
     xx = []
     yy = []
     with open(filename, 'r') as file:
@@ -26,8 +32,10 @@ def dim(xx, yy):
 def rdim(xx, yy):
     return range(np.min((len(xx), len(yy))))
 
+# if data is not in the right sequence it can be sorted automatically
+# i assume it is easier to fix minor bugs manually
 def connect(xx, yy, start):
-    xmax = np.max(xx)/70
+    xmax = np.max(xx)/70 # idk why 70
     ymax = np.max(yy)
     points = [np.array([xx[i]/xmax, yy[i]/ymax]) for i in rdim(xx, yy)]
     newpoints = [points.pop(start)]
@@ -36,31 +44,3 @@ def connect(xx, yy, start):
         newpoints.append(points.pop(next))
     
     return ([p[0]*xmax for p in newpoints], [p[1]*ymax for p in newpoints])
-
-
-
-# def plot_fldr(pic_fldr):
-#     fullfilenames = []
-#     for filename in os.listdir(pic_fldr):
-#         if filename[-4:] == '.csv':
-#             fullfilenames.append(os.path.join(pic_fldr, filename))
-    
-#     plt.figure(figsize=(2.5, 2.5))
-#     for filename in fullfilenames:
-#         xx, yy = connect(*read_csv(filename), 0)
-#         plt.plot(xx, yy, label = os.path.basename(filename).replace('_','/')[:-4])
-#         plt.legend()
-
-# def save_fldr(pic_fldr):
-#     fullfilenames = []
-#     for filename in os.listdir(pic_fldr):
-#         if filename[-4:] == '.csv':
-#             fullfilenames.append(os.path.join(pic_fldr, filename))
-    
-#     plt.figure(figsize=(2.5, 2.5))
-#     for filename in fullfilenames:
-#         xx, yy = connect(*read_csv(filename), 0)
-#         plt.plot(xx, yy, label = os.path.basename(filename).replace('_','/')[:-4])
-#         plt.legend(loc = 'upper right', bbox_to_anchor=(1.6, 0.8))
-
-#     plt.savefig(pic_fldr+'.jpg', dpi=300)
