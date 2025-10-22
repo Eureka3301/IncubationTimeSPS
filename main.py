@@ -13,16 +13,20 @@ from optimizers import *
 
 
 propfilename = {
-    'AC':r'C:\Users\rodio\Downloads\Data\As Cast.json',
-    'T':r'C:\Users\rodio\Downloads\Data\T5.json'
+    'AC':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast.json',
+    'T5':r'/Users/rodion/Downloads/2018 Effect of microstructure/T5.json',
+    'T6':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/TD/TD.json',
+    'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.json'
 }
 
 datafilename = {
-    'AC':r'C:\Users\rodio\Downloads\Data\As Cast.csv',
-    'T':r'C:\Users\rodio\Downloads\Data\T5.csv'
+    'AC':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast.csv',
+    'T5':r'/Users/rodion/Downloads/2018 Effect of microstructure/T5.csv',
+    'T6':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/TD/TD.csv',
+    'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.csv'
 }
 
-mat = 'T'
+mat = 'AC'
 print(f'Material {mat}')
 
 props = load_prop(propfilename[mat])
@@ -40,4 +44,5 @@ search_tau = np.logspace(np.log10(props.get('tau_l(s)')), np.log10(props.get('ta
 # Visualize LSM
 #fig, axes = LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau)
 
+# Visualize SPS
 fig, axes = SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, 10, 100)

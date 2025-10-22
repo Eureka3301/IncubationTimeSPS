@@ -94,7 +94,7 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
 
             delta = np.array([yy[k] - model(xx[k], p1, p2) for k in range(N)])
             deriv = np.array([dmodeldp2(xx[k], p1, p2) for k in range(N)])
-
+            
             H = np.abs((beta @ (delta * deriv).reshape(-1, 1)).flatten())
             
             # Sort H and find rank of H[0]
