@@ -62,7 +62,7 @@ def gather(propfilename, datafilename, mat_names):
         # x_curve_abs, y_curve_abs = ruffle(x_curve_unit, y_curve_unit, sig_st, E)
 
         # absolute model curve
-        x_curve_abs = np.logspace(np.log10(1e-4), np.log10(1e4), 100)
+        x_curve_abs = np.logspace(np.log10(1e1), np.log10(1e5), 100)
         y_curve_abs = np.array([abs_model(x, sig_cr, tau, sig_st, E) for x in x_curve_abs])
     
         label_sig_cr = f'$\\sigma_{{cr}}$={p1*sig_st/1e6:.0f}$MPa$, '
@@ -114,27 +114,38 @@ if __name__ == "__main__":
     'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.json',
     'MgGd':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgGd.json',
     'MgCa':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgCa.json',
-    'Mg':r'/Users/rodion/Downloads/Оцифровка наших кривых/Mg.json'
+    'Mg':r'/Users/rodion/Downloads/Оцифровка наших кривых/Mg.json',
+    '6.5Gd':r'/Users/rodion/Downloads/2024 Influence of Gd Content/6.5 Gd.json',
+    '7.5Gd':r'/Users/rodion/Downloads/2024 Influence of Gd Content/7.5 Gd.json',
+    '8.5Gd':r'/Users/rodion/Downloads/2024 Influence of Gd Content/8.5 Gd.json'
     }
 
     datafilename = {
-        'AC':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast.csv',
-        'AC+':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast and SD.csv',
-        'T5':r'/Users/rodion/Downloads/2018 Effect of microstructure/T5.csv',
-        'T6':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/TD/TD.csv',
-        'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.csv',
-        'MgGd':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgGd.csv',
-        'MgCa':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgCa.csv',
-        'Mg':r'/Users/rodion/Downloads/Оцифровка наших кривых/Mg.csv'
+    'AC':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast.csv',
+    'AC+':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast and SD.csv',
+    'T5':r'/Users/rodion/Downloads/2018 Effect of microstructure/T5.csv',
+    'T6':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/TD/TD.csv',
+    'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.csv',
+    'MgGd':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgGd.csv',
+    'MgCa':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgCa.csv',
+    'Mg':r'/Users/rodion/Downloads/Оцифровка наших кривых/Mg.csv',
+    '6.5Gd':r'/Users/rodion/Downloads/2024 Influence of Gd Content/6.5 Gd.csv',
+    '7.5Gd':r'/Users/rodion/Downloads/2024 Influence of Gd Content/7.5 Gd.csv',
+    '8.5Gd':r'/Users/rodion/Downloads/2024 Influence of Gd Content/8.5 Gd.csv'
     }
 
     materials = [
         'AC+',
+        'AC',
+        'SD',
         'T5',
         'T6',
         'Mg',
         'MgGd',
-        'MgCa'
+        'MgCa',
+        '6.5Gd',
+        '7.5Gd',
+        '8.5Gd'
     ]
 
-    gather(propfilename, datafilename, materials[:])
+    gather(propfilename, datafilename, materials[:8])
