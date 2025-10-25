@@ -1,13 +1,8 @@
 import numpy as np
 
 from filemanager import *
-from mechanics import *
-from optimizers import *
-from collection import *
+from visualizers import *
 
-import matplotlib.pyplot as plt
-import scienceplots
-plt.style.use(['science','no-latex'])
 
 # all data is loaded on Mac from yandex disk by folders directly in the Downloads
 
