@@ -9,6 +9,32 @@ from filemanager import *
 from mechanics import *
 from optimizers import *
 
+import numpy as np
+from scipy.optimize import minimize
+
+def refine_grid(opti_i, opti_j, search_p1, search_p2, refinement_factor=0.1):
+    '''
+    Refine grid search around initial optimum
+    '''
+
+    p1_num = len(search_p1)
+    p2_num = len(search_p2)
+
+    p1_range = (search_p1[-1] - search_p1[0])*refinement_factor
+    p2_range = (search_p2[-1] - search_p2[0])*refinement_factor
+
+    refined_p1_l = search_p1[opti_i] -  p1_range / 2
+    refined_p1_r = search_p1[opti_i] +  p1_range / 2
+
+    refined_p2_l = search_p2[opti_j] -  p2_range / 2
+    refined_p2_r = search_p2[opti_j] +  p2_range / 2
+    
+    # Create refined grid for this parameter
+    refined_search_p1 = np.linspace(refined_p1_l, refined_p1_r, p1_num)
+    refined_search_p2 = np.logspace(np.log10(refined_p2_l), np.log10(refined_p2_r), p2_num)
+
+    return refined_search_p1, refined_search_p2
+
 
 def LSM(xx, yy, search_p1, search_p2):
     '''
@@ -60,7 +86,7 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
 
     return grid
 
-def SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M, p1_opt=None, p2_opt=None):
+def SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     '''
     Visualizes SPS confidence regions and data
     
@@ -89,16 +115,6 @@ def SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M, p1_opt=Non
     
     ax1.scatter(xx, yy, color='red', label='Experimental data')
     
-    # If optimal parameters are provided, plot the model curve
-    if p1_opt is not None and p2_opt is not None:
-        # Generate smooth curve for model
-        x_curve = np.logspace(np.log10(min(xx_unit)), np.log10(max(xx_unit)), 100)
-        y_curve = np.array([model(x, p1_opt, p2_opt) for x in x_curve])
-        x_curve_abs, y_curve_abs = ruffle(x_curve, y_curve, sig_st, E)
-        
-        ax1.plot(x_curve_abs, y_curve_abs, 'b-', linewidth=2, 
-                label=f'Optimal model\nsig_cr={p1_opt*sig_st:.3f}, tau={p2_opt*1e-6:.2e}s')
-    
     ax1.set_xlabel('Strain rate (1/s)')
     ax1.set_ylabel('Stress (Pa)')
     ax1.set_title('Experimental Data')
@@ -121,11 +137,6 @@ def SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M, p1_opt=Non
     # Add contour lines for better visibility
     contour_lines = ax2.contour(P1_abs, P2_abs, SPS_grid.T, levels=[0.5], 
                                colors=['blue'])
-    
-    # If optimal parameters are provided, mark them
-    if p1_opt is not None and p2_opt is not None:
-        ax2.scatter(p1_opt * sig_st, p2_opt * 1e-6, color='red', s=50, 
-                   marker='*', label='Optimal point', zorder=5)
     
     ax2.set_xlabel('sig_cr (Pa)')
     ax2.set_ylabel('tau (s)')
@@ -231,7 +242,7 @@ def LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau):
     
     return fig, (ax1, ax2)
 
-def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
+def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M, refinement_depth = 1, refinement_scale = 0.1):
     '''
     Visualizes data, model fit, LSM and SPS grid search results
     
@@ -240,6 +251,9 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     sig_st, E: mechanical properties
     search_sig_cr: search range for sig_cr in absolute values (search_p1 * sig_st)
     search_tau: search range for tau in seconds (search_p2 * 1e-6)
+    q, M: SPS parameters
+    refinement_depth: grid remeshing iteration quantity
+    refinement_scale: grid bounds scaling factor
     '''
     
     # Convert to unit values
@@ -249,12 +263,25 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     search_p1 = search_sig_cr / sig_st
     search_p2 = search_tau / tau0
     
-    # Perform LSM grid search
-    print("Running LSM analysis...")
+    print(f"Running 1 LSM analysis...")
     opti_i, opti_j, summ_grid = LSM(xx_unit, yy_unit, search_p1, search_p2)
+
+    # Perform deep LSM grid search
+    for k in range(1, refinement_depth):
+        p1_opt = search_p1[opti_i]
+        p2_opt = search_p2[opti_j]
+        print(f'Unit parameters {k} step:')
+        print(f"  p1 = {p1_opt:.6f}")
+        print(f"  p2 = {p2_opt:.6f}")
+
+        search_p1, search_p2 = refine_grid(opti_i, opti_j, search_p1, search_p2)
+
+        print(f"Running {k+1} LSM analysis...")
+        opti_i, opti_j, summ_grid = LSM(xx_unit, yy_unit, search_p1, search_p2)
+    
     p1_opt = search_p1[opti_i]
     p2_opt = search_p2[opti_j]
-    
+
     # Convert optimal parameters back to absolute values
     sig_cr_opt = p1_opt * sig_st
     tau_opt = p2_opt * tau0
@@ -271,7 +298,7 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     # Convert back to absolute values for plotting
     x_curve_abs, y_curve_abs = ruffle(x_curve, y_curve, sig_st, E)
     
-    label_params = f'$\sigma_{{cr}}$={sig_cr_opt/1e6:.0f}$MPa$,\n$\\tau$={tau_opt*1e6:.0f}$\mu s$'
+    label_params = f'$\sigma_{{cr}}$={sig_cr_opt/1e6:.0f}$MPa$,\n$\\tau$={tau_opt:.1e}$ s$'
 
     ax1.scatter(xx, yy, color='red', label='Experimental data')
     ax1.plot(x_curve_abs, y_curve_abs, 'b-', label='Model LSM fit\n'+label_params)
@@ -301,11 +328,6 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     contour_lines = ax2.contour(P1_abs, P2_abs, SPS_grid.T, levels=[0.5], 
                                colors=['blue'])
     
-    # If optimal parameters are provided, mark them
-    if p1_opt is not None and p2_opt is not None:
-        ax2.scatter(p1_opt * sig_st, p2_opt * 1e-6, color='red', s=50, 
-                   marker='*', label='Optimal point', zorder=5)
-    
     ax2.set_title(f'SPS Confidence Region (q={q}, M={M})')
     
     # Calculate and display confidence region statistics
@@ -314,7 +336,7 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     confidence_percentage = (confidence_area / total_area) * 100
     
     # Add text box with statistics
-    textstr = f'Confidence region: {confidence_percentage:.1f}% of search space\n({confidence_area}/{total_area} points)'
+    textstr = f'Confidence region: {confidence_percentage:.1f}% of search space\n({confidence_area:.0f}/{total_area:.0f} points)'
     ax2.text(0.05, 0.95, textstr, transform=ax2.transAxes, fontsize=10,
              verticalalignment='top', bbox=dict(boxstyle='round', alpha=0.8))
 
@@ -333,16 +355,20 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     ax2.clabel(contour, inline=True, fontsize=6)
     ax2.scatter(sig_cr_opt, tau_opt, color='red', s=50, marker='*', 
                 label=f'Optimal:\n'+label_params)
-    ax2.set_xlabel('$\sigma_{cr}(MPa)$')
+    ax2.set_xlabel('$\\sigma_{cr}(MPa)$')
     ax2.set_ylabel('$\\tau(\mu s)$')
-    ax2.legend()
+    ax2.legend(fancybox=True,
+               frameon=True,
+               loc='best')
     ax2.grid(True, alpha=0.3)
     
     # Print optimal parameters
+    print(f"Unit parameters:")
+    print(f"  p1 = {p1_opt:.6f}")
+    print(f"  p2 = {p2_opt:.6f}")
     print(f"Optimal parameters:")
-    print(f"  sig_cr = {sig_cr_opt:.6f} Pa")
-    print(f"  tau = {tau_opt:.6e} s")
-    print(f"  Unit parameters: p1 = {p1_opt:.6f}, p2 = {p2_opt:.6f}")
+    print(f"  sig_cr = {sig_cr_opt/1e6:.0f} Pa")
+    print(f"  tau = {tau_opt:.1e} s")
 
     plt.tight_layout()
     plt.show()
