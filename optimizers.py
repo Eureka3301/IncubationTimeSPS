@@ -1,5 +1,4 @@
 import numpy as np
-from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 import scienceplots
@@ -11,6 +10,8 @@ from optimizers import *
 
 import numpy as np
 from scipy.optimize import minimize
+
+import time
 
 def refine_grid(opti_i, opti_j, search_p1, search_p2, refinement_factor=0.1):
     '''
@@ -42,7 +43,7 @@ def LSM(xx, yy, search_p1, search_p2):
     '''
     summ_grid = np.zeros((len(search_p1), len(search_p2)))
 
-    for i, p1 in tqdm(enumerate(search_p1), total=len(search_p1)):
+    for i, p1 in enumerate(search_p1):
         for j, p2 in enumerate(search_p2):
             summ = 0
             for k in range(len(xx)):
@@ -57,6 +58,57 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
     '''
     SPS probability area construction
     '''
+
+    start = time.time()
+
+    N = len(xx)
+
+    # SPS parameters
+    prob = 1 - q/M
+
+    np1 = len(search_p1)
+    np2 = len(search_p2)
+
+    np12 = np1*np2
+
+    dvector = np.empty((np12, N))
+
+    P1, P2 = np.meshgrid(search_p1, search_p2)
+
+    P1f= P1.flatten()
+    P2f= P2.flatten()
+
+    for ij in range(np12):
+        for k in range(N):
+            residual = yy[k] - model(xx[k], P1f[ij], P2f[ij])
+            derivative = dmodeldp2(xx[k], P1f[ij], P2f[ij])
+            dvector[ij, k] = residual * derivative
+
+    beta = np.random.choice([-1, 1], size=(N, M-1), p=[0.5, 0.5])
+    beta = np.hstack([np.ones((N, 1)), beta])
+
+    H = np.abs((dvector @ beta))
+    
+    flat_grid = np.zeros(np12)
+
+    for ij in range(np12):
+        sorted_H = np.sort(H[ij])
+        rank = np.searchsorted(sorted_H, H[ij, 0])
+        if rank < M - q:
+            flat_grid[ij] = 1  # Parameter is in confidence region
+
+    end = time.time()
+    print(f'    Time consumed: {end-start:.3f} s')
+
+    return flat_grid.reshape(np1, np2, order='F')
+
+def SPS_(xx, yy, search_p1, search_p2, q, M):
+    '''
+    SPS probability area construction
+    '''
+    
+    start = time.time()
+
     N = len(xx)
 
     # SPS parameters
@@ -65,10 +117,13 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
     # probability area - initialize grid properly
     grid = np.zeros((len(search_p1), len(search_p2)))
 
-    for i, p1 in tqdm(enumerate(search_p1), total=len(search_p1)):
+    beta = np.random.choice([-1, 1], size=(M-1, N), p=[0.5, 0.5])
+    beta = np.vstack([np.ones((1, N)), beta])
+    
+    for i, p1 in enumerate(search_p1):
         for j, p2 in enumerate(search_p2):
-            beta = np.random.choice([-1, 1], size=(M-1, N), p=[0.5, 0.5])
-            beta = np.vstack([np.ones((1, N)), beta])
+            # beta = np.random.choice([-1, 1], size=(M-1, N), p=[0.5, 0.5])
+            # beta = np.vstack([np.ones((1, N)), beta])
 
             delta = np.array([yy[k] - model(xx[k], p1, p2) for k in range(N)])
             deriv = np.array([dmodeldp2(xx[k], p1, p2) for k in range(N)])
@@ -83,6 +138,9 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
                 grid[i, j] = 1  # Parameter is in confidence region
             else:
                 grid[i, j] = 0  # Parameter is NOT in confidence region
+
+    end = time.time()
+    print(f'    Time consumed: {end-start:.3f} s')
 
     return grid
 
@@ -141,7 +199,6 @@ def SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M):
     ax2.set_xlabel('sig_cr (Pa)')
     ax2.set_ylabel('tau (s)')
     ax2.set_title(f'SPS Confidence Region (q={q}, M={M})')
-    ax2.legend()
     ax2.grid(True, alpha=0.3)
     
     # Calculate and display confidence region statistics
@@ -281,6 +338,10 @@ def LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, q, M, refine
     
     p1_opt = search_p1[opti_i]
     p2_opt = search_p2[opti_j]
+
+    print(f'Unit parameters {refinement_depth} step:')
+    print(f"  p1 = {p1_opt:.6f}")
+    print(f"  p2 = {p2_opt:.6f}")
 
     # Convert optimal parameters back to absolute values
     sig_cr_opt = p1_opt * sig_st

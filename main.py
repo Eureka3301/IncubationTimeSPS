@@ -12,25 +12,31 @@ plt.style.use(['science','no-latex'])
 # all data is loaded on Mac from yandex disk by folders directly in the Downloads
 
 propfilename = {
-'AC':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast.json',
-'AC+':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast and SD.json',
-'T5':r'/Users/rodion/Downloads/2018 Effect of microstructure/T5.json',
-'T6':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/TD/TD.json',
-'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.json',
-'MgGd':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgGd.json',
-'MgCa':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgCa.json',
-'Mg':r'/Users/rodion/Downloads/Оцифровка наших кривых/Mg.json'
-}
+    'AC':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast.json',
+    'AC+':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast and SD.json',
+    'T5':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/T5.json',
+    'T6':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/TD/TD.json',
+    'SD':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/SD/SD.json',
+    'MgGd':r'C:\Users\rodio\Downloads\Оцифровка наших кривых/MgGd.json',
+    'MgCa':r'C:\Users\rodio\Downloads\Оцифровка наших кривых/MgCa.json',
+    'Mg':r'C:\Users\rodio\Downloads\Оцифровка наших кривых/Mg.json',
+    '6.5Gd':r'C:\Users\rodio\Downloads\2024 Influence of Gd Content/6.5 Gd.json',
+    '7.5Gd':r'C:\Users\rodio\Downloads\2024 Influence of Gd Content/7.5 Gd.json',
+    '8.5Gd':r'C:\Users\rodio\Downloads\2024 Influence of Gd Content/8.5 Gd.json'
+    }
 
 datafilename = {
-    'AC':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast.csv',
-    'AC+':r'/Users/rodion/Downloads/2018 Effect of microstructure/As Cast and SD.csv',
-    'T5':r'/Users/rodion/Downloads/2018 Effect of microstructure/T5.csv',
-    'T6':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/TD/TD.csv',
-    'SD':r'/Users/rodion/Downloads/2020 Mechanical behavior and texture evolution/SD/SD.csv',
-    'MgGd':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgGd.csv',
-    'MgCa':r'/Users/rodion/Downloads/Оцифровка наших кривых/MgCa.csv',
-    'Mg':r'/Users/rodion/Downloads/Оцифровка наших кривых/Mg.csv'
+    'AC':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast.csv',
+    'AC+':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast and SD.csv',
+    'T5':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/T5.csv',
+    'T6':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/TD/TD.csv',
+    'SD':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/SD/SD.csv',
+    'MgGd':r'C:\Users\rodio\Downloads\Оцифровка наших кривых/MgGd.csv',
+    'MgCa':r'C:\Users\rodio\Downloads\Оцифровка наших кривых/MgCa.csv',
+    'Mg':r'C:\Users\rodio\Downloads\Оцифровка наших кривых/Mg.csv',
+    '6.5Gd':r'C:\Users\rodio\Downloads\2024 Influence of Gd Content/6.5 Gd.csv',
+    '7.5Gd':r'C:\Users\rodio\Downloads\2024 Influence of Gd Content/7.5 Gd.csv',
+    '8.5Gd':r'C:\Users\rodio\Downloads\2024 Influence of Gd Content/8.5 Gd.csv'
 }
 
 materials = [
@@ -61,7 +67,7 @@ search_tau = np.logspace(np.log10(props.get('tau_l(s)')), np.log10(props.get('ta
 # fig, axes = LSM_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau)
 
 # Visualize SPS
-fig, axes = SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, 10, 100)
+fig, axes = LSM_SPS_visualize(xx, yy, sig_st, E, search_sig_cr, search_tau, 20, 100, 2, 0.9)
 
 # Gather several materials
 # gather(propfilename, datafilename, materials[:])
