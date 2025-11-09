@@ -12,7 +12,7 @@ plt.style.use(['science','no-latex'])
 
 
 
-def gather(propfilename, datafilename, mat_names):
+def gather(propfilename, datafilename, mat_names, picname = None):
     '''
     list of properties
     list of exp data
@@ -73,12 +73,12 @@ def gather(propfilename, datafilename, mat_names):
         ax.scatter(xx, yy/1e6, label=f'{mat}', s=15)
         ax.plot(x_curve_abs, y_curve_abs/1e6, label=label_params)
 
-        ax.set_xscale('log')
+        #ax.set_xscale('log')
         ax.grid(True, alpha=0.3)
 
         ax.set_title('Data and Model Fit')
         ax.set_xlabel('Strain rate (1/s)')
-        ax.set_ylabel('Stress (MPa)')
+        ax.set_ylabel('Strength (MPa)')
         ax.legend()
         
         # Console Results
@@ -97,7 +97,12 @@ def gather(propfilename, datafilename, mat_names):
 
     plt.tight_layout()
     plt.ioff()
-    plt.show()
+
+    if picname == None:
+        plt.show()
+    else:
+        plt.savefig(picname, dpi=300)
+
 
 
 # demo of the module
@@ -107,8 +112,8 @@ if __name__ == "__main__":
 
 
     propfilename = {
-    'AC':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast.json',
-    'AC+':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast and SD.json',
+    'AC-':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast.json',
+    'AC':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast and SD.json',
     'T5':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/T5.json',
     'T6':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/TD/TD.json',
     'SD':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/SD/SD.json',
@@ -121,8 +126,8 @@ if __name__ == "__main__":
     }
 
     datafilename = {
-    'AC':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast.csv',
-    'AC+':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast and SD.csv',
+    'AC-':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast.csv',
+    'AC':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/As Cast and SD.csv',
     'T5':r'C:\Users\rodio\Downloads\2018 Effect of microstructure/T5.csv',
     'T6':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/TD/TD.csv',
     'SD':r'C:\Users\rodio\Downloads\2020 Mechanical behavior and texture evolution/SD/SD.csv',
@@ -135,17 +140,29 @@ if __name__ == "__main__":
     }
 
     materials = [
-        'AC+',
         'AC',
         'SD',
         'T5',
         'T6',
         'Mg',
         'MgGd',
-        'MgCa',
-        '6.5Gd',
-        '7.5Gd',
-        '8.5Gd'
+        'MgCa'
     ]
 
-    gather(propfilename, datafilename, materials[:8])
+    gather(propfilename, datafilename, materials, 'all.png')
+
+    inversion1 = [
+        'MgCa',
+        'T5',
+        'T6'
+    ]
+
+    gather(propfilename, datafilename, inversion1, 'inversion1.png')
+
+    inversion2 = [
+        'Mg',
+        'AC',
+        'T5'
+    ]
+
+    gather(propfilename, datafilename, inversion2, 'inversion2.png')
