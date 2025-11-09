@@ -21,7 +21,7 @@ def gather(propfilename, datafilename, mat_names, picname = None):
     '''
     
     plt.ion()
-    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    fig, ax = plt.subplots(1, 1, figsize=(15/2.54, 15/2.54))
 
     plt.draw()
     plt.pause(0.1)
@@ -79,11 +79,11 @@ def gather(propfilename, datafilename, mat_names, picname = None):
         ax.set_title('Data and Model Fit')
         ax.set_xlabel('Strain rate (1/s)')
         ax.set_ylabel('Strength (MPa)')
-        ax.legend()
+        ax.legend(fontsize=10)
         
         # Console Results
         print(f"{mat}")
-        print(f"    E = {E:.1e} and sig_st = {sig_st:.1e}")
+        print(f"    E = {E:.1e} Pa and sig_st = {sig_st:.1e} Pa")
 
         print("Optimal parameters:")
         print(f"    sig_cr = {sig_cr/1e6:.0f} MPa")
