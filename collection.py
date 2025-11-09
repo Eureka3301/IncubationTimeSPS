@@ -62,24 +62,23 @@ def gather(propfilename, datafilename, mat_names):
         # x_curve_abs, y_curve_abs = ruffle(x_curve_unit, y_curve_unit, sig_st, E)
 
         # absolute model curve
-        x_curve_abs = np.logspace(np.log10(1e1), np.log10(1e5), 100)
+        x_curve_abs = np.logspace(np.log10(1e1), np.log10(1e4), 100)
         y_curve_abs = np.array([abs_model(x, sig_cr, tau, sig_st, E) for x in x_curve_abs])
     
-        label_sig_cr = f'$\\sigma_{{cr}}$={p1*sig_st/1e6:.0f}$MPa$, '
-        label_sig_st = f'$\\sigma_{{st}}$={sig_st/1e6:.0f}$MPa$,\n'
-        label_tau = f'$\\tau$={p2*tau0:.1e}$\\mu s$'
-        label_params = 'LSM fit\n' + label_sig_cr + label_sig_st + label_tau
+        label_sig_cr = f'$\\sigma_{{cr}}$ = {p1*sig_st/1e6:.0f}$MPa$, '
+        label_sig_st = f'$\\sigma_{{st}}$ = {sig_st/1e6:.0f}$MPa$, '
+        label_tau = f'$\\tau$ = {p2:.1f}$\\mu s$'
+        label_params = label_sig_st + label_tau
 
-        ax.plot(x_curve_abs, y_curve_abs, label=label_params)
-        
-        ax.scatter(xx, yy, label=f'{mat}')
+        ax.scatter(xx, yy/1e6, label=f'{mat}', s=15)
+        ax.plot(x_curve_abs, y_curve_abs/1e6, label=label_params)
 
         ax.set_xscale('log')
         ax.grid(True, alpha=0.3)
 
         ax.set_title('Data and Model Fit')
         ax.set_xlabel('Strain rate (1/s)')
-        ax.set_ylabel('Stress (Pa)')
+        ax.set_ylabel('Stress (MPa)')
         ax.legend()
         
         # Console Results
