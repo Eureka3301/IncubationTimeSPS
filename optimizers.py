@@ -1,4 +1,5 @@
 import numpy as np
+from random import getrandbits
 import time
 from mechanics import *
 
@@ -43,6 +44,21 @@ def LSM(xx, yy, search_p1, search_p2):
 
     return opti_i, opti_j, summ_grid
 
+def gen_signs(M, N):
+    '''
+    generates M-1 rows of random signs
+    as 2^N zeros/ones in a random number from 0 to N
+    '''
+    beta = np.empty([M, N])
+    beta[0] = np.ones(N)
+    for j in range(1, M):
+        form = '{0:0' + str(N) + 'b}' # we need to write zeros in binary till N signs
+        binary = form.format(getrandbits(N))
+        beta[j] = np.array(
+            [2*int(bit)-1 for bit in binary]
+        )
+    return beta
+
 def SPS(xx, yy, search_p1, search_p2, q, M):
     '''
     SPS probability area construction
@@ -69,8 +85,7 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
             derivative = dmodeldp2(xx[k], P1f[ij], P2f[ij])
             dvector[ij, k] = residual * derivative
 
-    beta = np.random.choice([-1, 1], size=(N, M-1), p=[0.5, 0.5])
-    beta = np.hstack([np.ones((N, 1)), beta])
+    beta = gen_signs(M, N).transpose()
 
     H = np.abs((dvector @ beta))
     
@@ -99,14 +114,10 @@ def SPS___(xx, yy, search_p1, search_p2, q, M):
     # probability area
     grid = np.zeros((len(search_p1), len(search_p2)))
 
-    # 
-    beta = np.random.choice([-1, 1], size=(M-1, N), p=[0.5, 0.5])
-    beta = np.vstack([np.ones((1, N)), beta])
     
     for i, p1 in enumerate(search_p1):
         for j, p2 in enumerate(search_p2):
-            # beta = np.random.choice([-1, 1], size=(M-1, N), p=[0.5, 0.5])
-            # beta = np.vstack([np.ones((1, N)), beta])
+            beta = gen_signs(M, N)
 
             delta = np.array([yy[k] - model(xx[k], p1, p2) for k in range(N)])
             deriv = np.array([dmodeldp2(xx[k], p1, p2) for k in range(N)])
@@ -139,9 +150,12 @@ if __name__ == "__main__":
     xx_abs, yy_abs = ruffle(xx_unit, yy_unit, sig_st, E)
 
     # Define search ranges
-    search_sig_cr = np.linspace(0.5*true_sig_cr, 1.5*true_sig_cr, 50)  # 50-150 MPa
+    search_sig_cr = np.linspace(0.5*true_sig_cr, 1.5*true_sig_cr, 100)  # 50-150 MPa
     search_tau = np.logspace(-6, -4, 100)         # 1-100 microseconds
+
+    q = 20
+    M = 100
 
     from visualizers import LSM_SPS_visualize
     # Visualize LSM
-    fig, axes = LSM_SPS_visualize(xx_abs, yy_abs, sig_st, E, search_sig_cr, search_tau)
+    fig, axes = LSM_SPS_visualize(xx_abs, yy_abs, sig_st, E, search_sig_cr, search_tau, q, M)
