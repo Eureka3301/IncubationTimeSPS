@@ -27,7 +27,22 @@ def dmodeldp2(X, p1, p2):
     if X < p1 / p2:
         return X
     else:
-        return np.sqrt(p1*p2/X)
+        return np.sqrt(p1*X/p2)
+    
+def dmodeldp1(X, p1, p2):
+    '''
+    model derivative by p1
+    '''
+    if X < p1 / p2:
+        return 1
+    else:
+        return np.sqrt(p2*X/p1)
+
+def grad_model(X, p1, p2):
+    '''
+    model gradiant in parameter space
+    '''
+    return np.array((dmodeldp1(X, p1, p2), dmodeldp2(X, p1, p2)))
 
 def gen_data(p1, p2):
     '''

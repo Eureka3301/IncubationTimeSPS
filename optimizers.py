@@ -3,7 +3,7 @@ from random import getrandbits
 import time
 from mechanics import *
 
-def refine_grid(opti_i, opti_j, search_p1, search_p2, refinement_factor=0.1):
+def refine_grid(opti_i, opti_j, search_p1, search_p2, refinement_factor=0.5):
     '''
     Refine grid search around initial optimum
     '''
@@ -27,22 +27,27 @@ def refine_grid(opti_i, opti_j, search_p1, search_p2, refinement_factor=0.1):
     return refined_search_p1, refined_search_p2
 
 
-def LSM(xx, yy, search_p1, search_p2):
+def LSM(xx, yy, search_p1, search_p2, rel = 0.15):
     '''
     LSM search via limits
     '''
     summ_grid = np.zeros((len(search_p1), len(search_p2)))
+    exceeded_rel = np.zeros((len(search_p1), len(search_p2)))
 
     for i, p1 in enumerate(search_p1):
         for j, p2 in enumerate(search_p2):
             summ = 0
             for k in range(len(xx)):
-                summ += (yy[k] - model(xx[k], p1, p2))**2
+                Y = model(xx[k], p1, p2)
+                delta = yy[k] - Y
+                if np.abs(delta / Y) > rel:
+                    exceeded_rel[i, j] = 1
+                summ += delta**2
             summ_grid[i, j] = summ
 
     opti_i, opti_j = np.unravel_index(np.argmin(summ_grid), summ_grid.shape)
 
-    return opti_i, opti_j, summ_grid
+    return opti_i, opti_j, summ_grid, exceeded_rel
 
 def gen_signs(M, N):
     '''
@@ -82,8 +87,8 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
     for ij in range(np12):
         for k in range(N):
             residual = yy[k] - model(xx[k], P1f[ij], P2f[ij])
-            derivative = dmodeldp2(xx[k], P1f[ij], P2f[ij])
-            dvector[ij, k] = residual * derivative
+            norm_grad = np.linalg.norm(grad_model(xx[k], P1f[ij], P2f[ij]))
+            dvector[ij, k] = residual * norm_grad
 
     beta = gen_signs(M, N).transpose()
 
@@ -102,7 +107,7 @@ def SPS(xx, yy, search_p1, search_p2, q, M):
 
     return flat_grid.reshape(np1, np2, order='F')
 
-def SPS___(xx, yy, search_p1, search_p2, q, M):
+def SPS_old(xx, yy, search_p1, search_p2, q, M):
     '''
     SPS probability area construction
     '''
