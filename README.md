@@ -49,8 +49,8 @@ The IT model yield limit $\sigma_y$ for a given elastic stress $\sigma(t)=H(t) \
 $$
 \sigma_y = 
 \begin{cases}
-    \sigma_{cr} \dfrac{\tau}{t^*} \quad  &   t^* < \tau \\
-    \sigma_{cr}                   \quad  &   t^* > \tau
+    \sigma_{cr} \dfrac{\tau}{t_y} \quad  &   t_y < \tau \\
+    \sigma_{cr}                   \quad  &   t_y > \tau
 \end{cases}
 $$
 
@@ -69,26 +69,42 @@ Here:
 $$ p_1 = \sigma_{cr} / \sigma_{st}  \quad \text{relation between critical stress parameter and one in static} $$
 $$ p_2 = \tau / \tau_0              \quad \text{relation between incubation time and its order}(1\mu s) $$
 $$ Y = \sigma_y / \sigma_{st}       \quad \text{relation between yield stress and the one in static} $$
-$$ X = t^* / \tau_0                 \quad \text{relation between time till fracture and its order} $$
+$$ X = t_y / \tau_0                 \quad \text{relation between time till fracture and its order} $$
 
 ## LSM algorithm implementation
 
-The straight forward algo.
-Iterative remeshing centered on best fit.
-Mesh finess keeps the same the search window is zoomed.
+On the given grid calculating residuals and summing their squares.
+At the same time comparing residuals on the grid with relative error.
 
 ## SPS algorithm implementation
 
 I want to write how it works for the model.
 It is a bit harder than for linear regression.
 
+## Grid refinement
+
+Iterative remeshing centered on best LSM fit.
+Mesh finess keeps the same, the search window is zoomed.
+
+## Visuals
+
+The left axes $\dot{\varepsilon}$ - $\sigma_y$.
+The right axes $\sigma_y$ - $\tau$.
+
+`visual_assembly`
+
+2 types for the left:
+dots and curves
+3 types for the right:
+dots, contours and areas
+
+`prepare_LSM_SPS`
+calculating for assembly
 
 ## Optimisation
 
-1...2^N list of permutations instead of beta
-
-1...p1 x p2 multiply by beta
+adding norming by np.linalg.eigh (for symmetrical matrix)
 
 (tau_max - tau_min ) / tau_min --> search optimisation
 
-upload in file
+upload/download from file mb some GUI
